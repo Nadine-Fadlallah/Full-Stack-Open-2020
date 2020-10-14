@@ -3,7 +3,26 @@ import ReactDOM from 'react-dom'
 
 const Button = ({handleClick, text})=> <button onClick={handleClick}>{text}</button>
 
+const MaxAnecdote = ({points, anecdotes}) =>
+{
+  const maxVotes = Math.max(...points)
+  
+  const maxAnecdote = anecdotes[points.indexOf(maxVotes)]
+ //console.log(maxVotes,maxAnecdote)
+ if(maxVotes === 0) 
+  return <p>No votes yet</p>
+
+  return(
+    <>
+  <div>{maxAnecdote}</div>
+  <div>has {maxVotes} votes</div>
+  </>
+  )
+}
+
+
 const App = (props) => {
+  
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState(Array(6).fill(0))
 
@@ -16,20 +35,23 @@ const App = (props) => {
   const voteAnecdote = (selected) =>{
     const updatedPoints = [...points]
     updatedPoints[selected]+=1
-    
     //console.log(selected, updatedPoints)
     setPoints(updatedPoints)
   }
-
   
   return (
-    <div>
-      <p>{props.anecdotes[selected]}</p>
-      <p>has {points[selected]} votes</p>
+    <>
+      <h1>Anecdote of the day</h1>
+      {props.anecdotes[selected]}
 
+      <div>has {points[selected]} votes</div>
+      
       <Button handleClick={()=>voteAnecdote(selected)} text={"vote"}/>
       <Button handleClick={randomAnecdote} text={"next anecdote"}/>
-    </div>
+      
+      <h1>Anecdote with the most votes</h1>
+      <MaxAnecdote  points={points} anecdotes={anecdotes}/>
+    </>
   )
 }
 
