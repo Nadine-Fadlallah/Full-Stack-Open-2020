@@ -1,9 +1,9 @@
 import React from "react"
 
-const Contacts = ({ name }) => {
+const Contacts = ({ name, number }) => {
   return (
     <>
-      <div>{name}</div>
+      <div>{name} {number}</div>
     </>
   )
 }
