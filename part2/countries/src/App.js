@@ -8,7 +8,6 @@ const App = () => {
 
   const [countries, setCountries] = useState([])
   const [search, setSearch] = useState("")
-  //const [matches, setMatches] = useState([])
 
   useEffect(() => {
     console.log('effect')
@@ -22,11 +21,11 @@ const App = () => {
 
 
 
-  // updating my search input data by each render
+  // Updating my search input data by each render
   const handleSearch = (event) => {
     setSearch(event.target.value)
   }
-
+  // Checking for matches
   const isSubstring = (s1, s2) => {
     return s1.toLowerCase().includes(s2.toLowerCase())
   }
@@ -41,7 +40,7 @@ const App = () => {
   }*/
 
   const matches = findMatches(search)
-  console.log(matches.name)
+  console.log(matches)
 
   return (
     <>

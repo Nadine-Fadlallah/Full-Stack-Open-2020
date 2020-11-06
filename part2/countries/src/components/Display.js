@@ -14,7 +14,9 @@ const Display = ({ result }) => {
         return (
             <>
                 {result.map(country => (
-                    <Country country={country} />))}
+                    <Country
+                        key={country.alpha3Code}
+                        country={country} />))}
             </>
         )
 
@@ -22,8 +24,9 @@ const Display = ({ result }) => {
         <>
             {result.map(country => (
                 <Countries
-                    key={country.name}
-                    name={country.name}
+                    key={country.alpha3Code}
+                    country={country}
+
 
                 />))
             }
