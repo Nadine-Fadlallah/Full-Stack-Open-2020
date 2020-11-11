@@ -7,10 +7,15 @@ const getAll = () => {
     return request.then((response) => response.data);
 };
 
-// return the updated persons' data in our backend
+// return the updated person's data in our backend
 const create = (newObject) => {
     const request = axios.post(baseUrl, newObject);
     return request.then((response) => response.data);
 };
 
-export default { getAll, create };
+const deleteContact = (id) => {
+    const request = axios.delete(`${baseUrl}/${id}`)
+    return request
+}
+
+export default { getAll, create, deleteContact };

@@ -1,9 +1,12 @@
 import React from "react"
 
-const Contacts = ({ name, number }) => {
+const Contacts = ({ name, number, onClick }) => {
   return (
     <>
-      <div>{name} {number}</div>
+      <div>{name} {number}
+        <button onClick={onClick}>delete</button>
+      </div>
+
     </>
   )
 }

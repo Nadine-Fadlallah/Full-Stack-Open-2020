@@ -68,6 +68,19 @@ const App = () => {
   const handleSearch = (event) => {
     setNewSearch(event.target.value);
   };
+
+  const handleDelete = (deletedPerson) => {
+    if (window.confirm(`Delete ${deletedPerson.name} ?`)) {
+      personService.deleteContact(deletedPerson.id);
+
+      const filteredPersons = persons.filter(
+        (person) => person.id !== deletedPerson.id
+      );
+
+      setPersons(filteredPersons);
+    }
+  };
+
   const isSubstring = (s1, s2) => {
     return s1.toLowerCase().includes(s2.toLowerCase());
   };
@@ -99,9 +112,10 @@ const App = () => {
       <div>
         {contacts.map((person) => (
           <Contacts
-            key={person.name}
+            key={person.id}
             name={person.name}
             number={person.number}
+            onClick={() => handleDelete(person)}
           />
         ))}
       </div>
