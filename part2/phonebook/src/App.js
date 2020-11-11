@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Contacts from "./components/Contacts";
 import Form from "./components/Form";
 import Filter from "./components/Filter";
-//import axios from 'axios'
+import personService from "./services/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -13,10 +12,9 @@ const App = () => {
   const [search, setNewSearch] = useState("");
 
   useEffect(() => {
-    //console.log('effect')
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService.getAll().then((initialPersons) => {
       console.log("response fullfied");
-      setPersons(response.data);
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -30,7 +28,7 @@ const App = () => {
     ); //returns the person that matches the entered number
 
     // console.log(repeatedName + '  ' + repeatedNumber)
-    
+
     // Check no repetion or empty field(s)
     if (!(repeatedName || repeatedNumber)) {
       // show a message in case of empty input(s) & don't reset
@@ -43,13 +41,9 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      axios
-        .post("http://localhost:3001/persons", personObj)
-        .then((response) => {
-          //console.log(response)
-          setPersons(persons.concat(response.data));
-        });
-      //setPersons(persons.concat(personObj))
+      personService
+        .create(personObj)
+        .then((updatedPerson) => setPersons(persons.concat(updatedPerson)));
     }
     // In case of a repeated name or number
     else {
