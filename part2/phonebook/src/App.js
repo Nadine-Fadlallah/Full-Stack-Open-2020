@@ -4,6 +4,7 @@ import Form from "./components/Form";
 import Filter from "./components/Filter";
 import personService from "./services/Persons";
 import Notification from "./components/Notification";
+import Error from "./components/Error";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -14,6 +15,8 @@ const App = () => {
   const [search, setNewSearch] = useState("");
 
   const [notification, setNewNotification] = useState(null);
+
+  const [errorMessage, setNewErrorMessage] = useState(null);
 
   //---------------------------- FETCHING CONTACTS FROM THE SERVER ----------------------------//
   useEffect(() => {
@@ -61,6 +64,7 @@ const App = () => {
 
     // In case of a repeated name or/and number
     else {
+      //const errorAlert = False;
       // Here I have a person with a repeated name and a new number
       if (!repeatedNumberPerson) {
         // && repeatedName)
@@ -75,20 +79,38 @@ const App = () => {
           const changedPerson = { ...repeatedNamePerson, number: newNumber };
 
           // then I'll update the backend and webpage with our modified contact
-          personService.update(changedPerson.id, changedPerson).then((
-            updatedPerson //console.log(updatedPerson)
-          ) =>
-            setPersons(
-              persons.map((person) =>
-                person.id !== changedPerson.id ? person : updatedPerson
+          personService
+            .update(changedPerson.id, changedPerson)
+            .then((
+              updatedPerson //console.log(updatedPerson)
+            ) =>
+              setPersons(
+                persons.map((person) =>
+                  person.id !== changedPerson.id ? person : updatedPerson
+                )
               )
             )
-          );
-          //and display a notification message for 5 secs
-          setNewNotification(`Modified ${changedPerson.name}`);
-          setTimeout(() => {
-            setNewNotification(null);
-          }, 5000);
+            .catch((error) => {
+              // In case of an error caught(e.g., modifying a deleted contact), display an error alert for 5 secs
+              setNewErrorMessage(
+                `Information of ${changedPerson.name} has already been removed from server!!!`
+              );
+              setTimeout(() => {
+                setNewErrorMessage(null);
+              }, 5000);
+              // and remove that errory update from the webpage (webpage and backend are now consistent)
+              setPersons(
+                persons.filter((person) => person.id !== changedPerson.id)
+              );
+            });
+
+          // If no error is caught (update is successful), display a notification message for 5 secs
+          if (errorMessage) {
+            setNewNotification(`Modified ${changedPerson.name}`);
+            setTimeout(() => {
+              setNewNotification(null);
+            }, 5000);
+          }
         }
       }
 
@@ -150,6 +172,9 @@ const App = () => {
 
       {/* Notification */}
       <Notification message={notification} />
+
+      {/* Error */}
+      <Error message={errorMessage} />
 
       {/* Filter field */}
       <Filter fieldName={search} onChange={handleSearch} />

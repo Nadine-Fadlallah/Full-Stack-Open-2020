@@ -1,6 +1,6 @@
 import React from "react";
 const notificationStyle = {
-  color: "green",
+  color: "red",
   background: "lightgrey",
   fontSize: 20,
   borderStyle: "solid",
@@ -9,7 +9,7 @@ const notificationStyle = {
   marginBottom: 10,
 };
 
-const Notification = ({ message, type }) => {
+const Error = ({ message }) => {
   if (message === null) {
     return null;
   }
@@ -17,4 +17,4 @@ const Notification = ({ message, type }) => {
   return <div style={notificationStyle}>{message}</div>;
 };
 
-export default Notification;
+export default Error;
