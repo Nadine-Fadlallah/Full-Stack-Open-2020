@@ -7,7 +7,7 @@ const getAll = () => {
     return request.then((response) => response.data);
 };
 
-// return the updated person's data in our backend
+// return the added person's data in our backend
 const create = (newObject) => {
     const request = axios.post(baseUrl, newObject);
     return request.then((response) => response.data);
@@ -18,4 +18,10 @@ const deleteContact = (id) => {
     return request
 }
 
-export default { getAll, create, deleteContact };
+// return the updated person's data
+const update = (id, updatedObj) => {
+    const request = axios.put(`${baseUrl}/${id}`, updatedObj)
+    return request.then(response => response.data)
+}
+
+export default { getAll, create, deleteContact, update };

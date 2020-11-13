@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 const Filter = ({ fieldName, onChange }) => {
   return (
@@ -10,6 +10,6 @@ const Filter = ({ fieldName, onChange }) => {
         </div>
       </form>
     </>
-  )
-}
-export default Filter
+  );
+};
+export default Filter;

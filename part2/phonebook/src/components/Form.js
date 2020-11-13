@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 const Form = ({ onSubmit, name, number, onNameChange, onNumberChange }) => {
   return (
@@ -15,7 +15,7 @@ const Form = ({ onSubmit, name, number, onNameChange, onNumberChange }) => {
         </div>
       </form>
     </>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;

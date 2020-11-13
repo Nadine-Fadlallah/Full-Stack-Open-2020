@@ -3,14 +3,19 @@ import Contacts from "./components/Contacts";
 import Form from "./components/Form";
 import Filter from "./components/Filter";
 import personService from "./services/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
   const [search, setNewSearch] = useState("");
 
+  const [notification, setNewNotification] = useState(null);
+
+  //---------------------------- FETCHING CONTACTS FROM THE SERVER ----------------------------//
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
       console.log("response fullfied");
@@ -18,21 +23,23 @@ const App = () => {
     });
   }, []);
 
+  //---------------------------- ADDING A NEW CONTACT / MODIFYING AN EXISTING ONE ----------------------------//
   const addContact = (event) => {
     event.preventDefault();
 
-    const repeatedName = persons.find((person) => person.name === newName); //returns the person that matches the entered name
+    const repeatedNamePerson = persons.find(
+      (person) => person.name === newName
+    ); //returns the person that matches the entered name
 
-    const repeatedNumber = persons.find(
+    const repeatedNumberPerson = persons.find(
       (person) => person.number === newNumber
     ); //returns the person that matches the entered number
 
-    // console.log(repeatedName + '  ' + repeatedNumber)
-
-    // Check no repetion or empty field(s)
-    if (!(repeatedName || repeatedNumber)) {
-      // show a message in case of empty input(s) & don't reset
+    // Check for no repeated field(s)
+    if (!(repeatedNamePerson || repeatedNumberPerson)) {
+      // Check for no empty field(s)
       if (!(newName && newNumber)) {
+        // show an alert message in case of empty input(s) & don't clear that field
         window.alert("Please fill the missing contact info!");
         return;
       }
@@ -43,18 +50,78 @@ const App = () => {
       };
       personService
         .create(personObj)
-        .then((updatedPerson) => setPersons(persons.concat(updatedPerson)));
-    }
-    // In case of a repeated name or number
-    else {
-      window.alert(
-        `${repeatedName ? newName : newNumber} is already added to phonebook`
-      );
+        .then((addedPerson) => setPersons(persons.concat(addedPerson)));
+
+      // Shows a notification message for 5 secs
+      setNewNotification(`Added ${newName}`);
+      setTimeout(() => {
+        setNewNotification(null);
+      }, 5000);
     }
 
+    // In case of a repeated name or/and number
+    else {
+      // Here I have a person with a repeated name and a new number
+      if (!repeatedNumberPerson) {
+        // && repeatedName)
+
+        // So I'm asking if he wants the contact to be modified
+        if (
+          window.confirm(
+            `${repeatedNamePerson.name} is already added to phonebook, replace the old number with a new one?`
+          )
+        ) {
+          // If yes, I'll make a new changed contact with the new number entered
+          const changedPerson = { ...repeatedNamePerson, number: newNumber };
+
+          // then I'll update the backend and webpage with our modified contact
+          personService.update(changedPerson.id, changedPerson).then((
+            updatedPerson //console.log(updatedPerson)
+          ) =>
+            setPersons(
+              persons.map((person) =>
+                person.id !== changedPerson.id ? person : updatedPerson
+              )
+            )
+          );
+          //and display a notification message for 5 secs
+          setNewNotification(`Modified ${changedPerson.name}`);
+          setTimeout(() => {
+            setNewNotification(null);
+          }, 5000);
+        }
+      }
+
+      // Here I have a person with a repeated number with either an old or new name
+      else {
+        // So I'm displaying an alert that a name/number is repeated
+        window.alert(
+          `${
+            repeatedNamePerson !== repeatedNumberPerson ? newNumber : newName
+          } is already added to phonebook`
+        );
+      }
+    }
+
+    // When all is done, clear both fields
     setNewName("");
     setNewNumber("");
   };
+
+  //---------------------------- DELETING A CONTACT ----------------------------//
+
+  const handleDelete = (deletedPerson) => {
+    if (window.confirm(`Delete ${deletedPerson.name} ?`)) {
+      personService.deleteContact(deletedPerson.id);
+
+      const filteredPersons = persons.filter(
+        (person) => person.id !== deletedPerson.id
+      );
+
+      setPersons(filteredPersons);
+    }
+  };
+
   const handleNameChange = (event) => {
     console.log(event.target.value);
     setNewName(event.target.value);
@@ -69,18 +136,6 @@ const App = () => {
     setNewSearch(event.target.value);
   };
 
-  const handleDelete = (deletedPerson) => {
-    if (window.confirm(`Delete ${deletedPerson.name} ?`)) {
-      personService.deleteContact(deletedPerson.id);
-
-      const filteredPersons = persons.filter(
-        (person) => person.id !== deletedPerson.id
-      );
-
-      setPersons(filteredPersons);
-    }
-  };
-
   const isSubstring = (s1, s2) => {
     return s1.toLowerCase().includes(s2.toLowerCase());
   };
@@ -92,6 +147,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      {/* Notification */}
+      <Notification message={notification} />
 
       {/* Filter field */}
       <Filter fieldName={search} onChange={handleSearch} />
